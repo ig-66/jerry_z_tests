@@ -13,13 +13,9 @@ west init -m https://github.com/ig-66/jerry_z_tests
 This command will result in the following:
 ```
 [folder_where_the_command_was_executed]
-    |
     + .west 
-    |
     + jerry_z_tests
-        |
         + west.yml
-        |
         + ...
 ``` 
 Now run:
