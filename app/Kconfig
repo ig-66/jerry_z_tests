@@ -11,6 +11,18 @@ choice
 		bool "Built the simple thread JerryZ sample"
 		select CONFIG_JERRY_PARSER
 
+	config JERRYZ_EXAMPLE_SNAP_LOAD
+		bool "Built the snapshot file sample"
+		select JERRY_SNAPSHOT_EXEC
+		select USB_DEVICE_STACK
+		select USB_MASS_STORAGE
+		select DISK_ACCESS
+		select DISK_DRIVERS
+		select FILE_SYSTEM
+		select FAT_FILESYSTEM_ELM
+		select FS_FATFS_LFN
+		select LOG
+
 	config JERRYZ_EXAMPLE_SNAPSHOT
 		bool "Build snapshot save and execute example"
 		select JERRY_SNAPSHOT_EXEC
@@ -21,6 +33,16 @@ choice
 		select JERRY_PARSER
 
 endchoice
+	
+if JERRYZ_EXAMPLE_SNAP_LOAD
+	
+	config MASS_STORAGE_STACK_SIZE
+		default 768
+
+	config JERRY_PARSER
+		default n
+
+endif # JERRYZ_EXAMPLE_SNAP_LOAD
 
 if JERRYZ_EXAMPLE_SNAPSHOT
 
