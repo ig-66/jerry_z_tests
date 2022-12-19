@@ -8,11 +8,11 @@ choice
 	  Specify the JerryZ sample to be built.
 
 	config JERRYZ_EXAMPLE_THREAD_SIMPLE
-		bool "Built the simple thread JerryZ sample"
+		bool "Build the simple thread JerryZ sample"
 		select CONFIG_JERRY_PARSER
 
 	config JERRYZ_EXAMPLE_SNAP_LOAD
-		bool "Built the snapshot file sample"
+		bool "Build the snapshot file sample"
 		select JERRY_SNAPSHOT_EXEC
 		select USB_DEVICE_STACK
 		select USB_MASS_STORAGE
