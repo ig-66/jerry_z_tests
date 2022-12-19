@@ -33,3 +33,14 @@ Simply run:
 ```
 west flash
 ```
+
+## Snapshot Load Example
+In this example, the application will load and execute a snapshot file that is present in the mass storage.
+
+The snapshot file, named `.snapshot`, must be placed in the selected storage device before the program runs, it can be placed in the storage through the USB. 
+
+The snapshot file can be created using a JerryScript on Linux or Windows. To learn more visit the [official JerryScript repo](https://github.com/jerryscript-project/jerryscript).
+
+To select the snapshot load and execution example, open Zephyr's `guiconfig` or `menuconfig` and select "Build the snapshot file sample" choice under the "JerryZ sample to be built" menu.
+
+When it is selected, the configuration options to make the device: use the SDHC over SPI; put it USB mass storage; use long file names; and name mount point to SD, are automatically selected.
