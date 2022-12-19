@@ -6,8 +6,6 @@ manifest:
   remotes:
     - name: zephyrproject-rtos
       url-base: https://github.com/zephyrproject-rtos
-    - name: moduhub
-      url-base: https://bitbucket.org/moduhub
  
   projects:
   
@@ -15,11 +13,6 @@ manifest:
       remote: zephyrproject-rtos
       revision: v3.1.0
       import: true
-  
-    - name: hal_atmel
-      remote: zephyrproject-rtos
-      repo-path: hal_atmel
-      path: modules/hal/atmel
 
     - name: zephyr_jerryscript
       url: https://github.com/moduhub/zephyr_jerryscript
