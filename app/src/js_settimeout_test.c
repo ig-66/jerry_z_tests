@@ -19,7 +19,7 @@
 K_MBOX_DEFINE(js_mailbox);
 
 struct js_func_schedule {
-	jerry_value_t function_value;	// function value
+	jerry_value_t value;			// function value
 	uint32_t time_interval;			// time in ms
 	uint32_t time_counter;			// time until execution
 	uint8_t type; 					// 0: setInterval, 1: setTimeout
@@ -27,6 +27,7 @@ struct js_func_schedule {
 	uint8_t queue;					// the queue position of the timer
 };
 
+typedef struct js_func_schedule js_func;
 
 extern void jerry_start(void *, void *, void *);
 extern void timeout_exec(void *, void *, void *);
