@@ -54,7 +54,10 @@ timeout_handler(const jerry_call_info_t *call_info_p,
 				const jerry_value_t arguments[],
 				const jerry_length_t arguments_count);
 
-
+static jerry_value_t
+interval_handler(const jerry_call_info_t *call_info_p,
+				const jerry_value_t arguments[],
+				const jerry_length_t arguments_count);
 
 void main(void){
 
@@ -92,8 +95,11 @@ int js_example_print_handler (void) {
 			print('older Number is: ' + number); \
 			number = 10; \
 			print('new Number is: ' + number); \
+		}, 10000); \
+		setInterval(function(){ \
+			print('1 second interval'); \
 		}, 1000); \
-		print('after timeout aaaaaa'); \
+		print('After timeout in script'); \
 	";
 
 	const jerry_length_t script_size = sizeof (script) - 1;
@@ -102,24 +108,40 @@ int js_example_print_handler (void) {
 		/* Get the "global" object */
 		jerry_value_t global_object = jerry_current_realm ();
 
-		/* Create a "print" JS string */
-		jerry_value_t property_name_print = jerry_string_sz ("setTimeout");
+		jerry_value_t property_name_timeout = jerry_string_sz ("setTimeout");
 		/* Create a function from a native C method (this function will be called from JS) */
-		jerry_value_t property_value_func = jerry_function_external (timeout_handler);
+		jerry_value_t property_func_timeout = jerry_function_external (timeout_handler);
 		/* Add the "setTimeout" property with the function value to the "global" object */
-		jerry_value_t set_result = jerry_object_set (global_object, property_name_print, property_value_func);
+		jerry_value_t set_timeout_res = jerry_object_set(global_object, property_name_timeout, property_func_timeout);
 
 		/* Check if there was no error when adding the property (in this case it should never happen) */
-		if (jerry_value_is_exception (set_result)) {
+		if (jerry_value_is_exception(set_timeout_res)){
+			printk("Failed to add the 'setTimeout' function property\n");
+			return 1;
+		}
+
+		/* Release all jerry_value_t-s */
+		jerry_value_free(property_name_timeout);
+		jerry_value_free(property_func_timeout);
+		jerry_value_free(set_timeout_res);
+
+		jerry_value_t property_name_interval = jerry_string_sz("setInterval");
+		/* Create a function from a native C method (this function will be called from JS) */
+		jerry_value_t property_func_interval = jerry_function_external(interval_handler);
+		/* Add the "setTimeout" property with the function value to the "global" object */
+		jerry_value_t set_interval_res = jerry_object_set(global_object, property_name_interval, property_func_interval);
+
+		/* Check if there was no error when adding the property (in this case it should never happen) */
+		if (jerry_value_is_exception(set_interval_res)){
 			printk ("Failed to add the 'setTimeout' function property\n");
 			return 1;
 		}
 
 		/* Release all jerry_value_t-s */
 		jerry_value_free (global_object);
-		jerry_value_free (property_name_print);
-		jerry_value_free (property_value_func);
-		jerry_value_free (set_result);
+		jerry_value_free (property_name_interval);
+		jerry_value_free (property_func_interval);
+		jerry_value_free (set_interval_res);
 	}
 
 
@@ -245,6 +267,35 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 	return 0;
 }
 		
+
+static jerry_value_t
+interval_handler(const jerry_call_info_t *call_info_p,
+				const jerry_value_t arguments[],
+				const jerry_length_t arguments_count)
+{
+	/* There should be at least one argument */
+	if (arguments_count > 0)
+	{
+		// TODO:
+		/* The setTimeout handler should also verify the type of the arguments being passed to it */
+
+		if (jerry_value_is_function(arguments[0])){
+			/**************************************************************
+				should send the code to execute through mailbox,
+				asynchronously, so it does not await the message to be
+				received by the receiver
+			**************************************************************/
+			js_func function;
+
+			function.value = arguments[0];
+			function.time_interval = (arguments[1] / 16);
+			function.type = 1; // interval
+
+			produce_thread_message(function);
+		} else {
+			printk("-- ERROR: while setting the interval, it is not a function!\n");
+			return 1;
+		}
 		return 0;
 	}
 
