@@ -7,7 +7,7 @@
 #include "jerryscript-ext/properties.h"
 
 /* 10000 msec = 10 sec */
-#define SLEEP_TIME_MS   10000
+#define SLEEP_TIME_MS   22000
 
 #define JS_STACK_SIZE 4096
 #define JS_PRIORITY 5
@@ -86,7 +86,7 @@ void jerry_start(void * unused1, void * unused2, void * unused3){
 
 
 int js_example_print_handler (void) {
-	
+
 	const jerry_char_t script[] = "print('This is from the Jerry Thread!'); \
 		print ('Hello from JS!'); \
 		var number = 5; \
@@ -151,7 +151,7 @@ int js_example_print_handler (void) {
 	if (!jerry_value_is_exception (parsed_code))
 	{
 		/* Execute the parsed source code in the Global scope */
-		printk("Parsed code is not an exception!\n");
+		// printk("Parsed code is not an exception!\n");
 		jerry_value_t ret_value = jerry_run (parsed_code);
 
 		/* Returned value must be freed */
@@ -169,7 +169,6 @@ int js_example_print_handler (void) {
 
 extern void timeout_exec(void * unused1, void * unused2, void * unused3){
 	// printk(">> INSIDE TIMEOUT THREAD <<\n");
-	printk(">\n");
 
 	/******************************************************************************
 		Get message from mail box, it should have the code do execute, time, 
@@ -214,7 +213,7 @@ extern void timeout_exec(void * unused1, void * unused2, void * unused3){
 
 				if(func_array[i].time_counter <= 0){
 					printk("Executing...\n");
-		jerry_value_t undefined;
+					jerry_value_t undefined;
 					jerry_value_t ret = jerry_call (func_array[i].value, undefined, NULL, 0);
 					jerry_value_free(undefined);
 					jerry_value_free(ret);
@@ -245,7 +244,6 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 		/* The setTimeout handler should also verify the type of the arguments being passed to it */
 		
 		if(jerry_value_is_function (arguments[0])){
-			printk("It is a function\n");
 			/**************************************************************
 				should send the code to execute through mailbox, 
 				asynchronously, so it does not await the message to be 
@@ -266,7 +264,7 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 	}
 	return 0;
 }
-		
+
 
 static jerry_value_t
 interval_handler(const jerry_call_info_t *call_info_p,
@@ -298,13 +296,12 @@ interval_handler(const jerry_call_info_t *call_info_p,
 		}
 		return 0;
 	}
-
 	return 0;
 }
 
 
 void produce_thread_message(js_func script)
-{
+{	
 	struct k_mbox_msg send_msg;
 
 	// while (1) {
@@ -353,7 +350,7 @@ void consume_thread_message(js_func * buffer)
 
 		/* retrieve message data and delete the message */
 		if (recv_msg.info == recv_msg.size){
-		k_mbox_data_get(&recv_msg, buffer);
+			k_mbox_data_get(&recv_msg, buffer);
 		} else {
 			buffer->value = 0;
 		}
