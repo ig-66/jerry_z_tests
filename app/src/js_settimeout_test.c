@@ -32,8 +32,8 @@ typedef struct js_func_schedule js_func;
 extern void jerry_start(void *, void *, void *);
 extern void timeout_exec(void *, void *, void *);
 
-void produce_thread_message(jerry_value_t script);
-void consume_thread_message(jerry_value_t * buffer);
+void produce_thread_message(js_func script);
+void consume_thread_message(js_func *buffer);
 
 /* Start Jerry engine on a new thread */
 K_THREAD_DEFINE(js_tid, JS_STACK_SIZE,
@@ -154,15 +154,59 @@ extern void timeout_exec(void * unused1, void * unused2, void * unused3){
 		type (setTimeout or setInterval), and timer ID 
 	******************************************************************************/
 	// k_msleep(10000);
-	jerry_value_t buffer[1];
+	js_func buffer;
+
+	static js_func func_array[10];
+	uint8_t func_array_sz = sizeof(func_array)/sizeof(func_array[0]);
+
+	const uint8_t JS_TIME_STEP = 10;
 
 	while(1){
-		consume_thread_message(buffer);
-		k_msleep(1);
-		// printk("Oh shit, this is a %s\n", buffer);
-		printk("buffer script: %d\n", buffer[0]);
+		consume_thread_message(&buffer);
+		
+		/* Place the new function in the function array */
+		if(buffer.value != 0){
+			for(uint8_t i = 0; i < func_array_sz; i++){
+				if(func_array[i].value == 0){
+					func_array[i] = buffer;
+					func_array[i].time_counter = buffer.time_interval;
+					buffer.value = 0;
+				}
+			}
+		}
+
+		for(uint8_t i = 0; i < func_array_sz; i++){
+			
+			if(func_array[i].value != 0){
+				/*
+				printk("Function [%d]:\n  \
+				  	Value: 		%d\n \
+					Interval:	%d\n \
+					Counter:	%d\n \
+					Type:		%s\n \
+				  \n", i, func_array[i].value, func_array[i].time_interval, func_array[i].time_counter,
+				  func_array[i].type ? "setInterval" : "setTimeout");
+				*/
+
+				func_array[i].time_counter = func_array[i].time_counter - JS_TIME_STEP;
+
+				if(func_array[i].time_counter <= 0){
+					printk("Executing...\n");
 		jerry_value_t undefined;
-		jerry_value_t ret = jerry_call (buffer[0], undefined, NULL, 0);
+					jerry_value_t ret = jerry_call (func_array[i].value, undefined, NULL, 0);
+					jerry_value_free(undefined);
+					jerry_value_free(ret);
+					
+					if(func_array[i].type == 0){
+						func_array[i].value = 0;
+					} else {
+						printk("reseting...\n");
+						func_array[i].time_counter = func_array[i].time_interval;
+					}
+				}
+			}
+		}
+		k_msleep(JS_TIME_STEP);
 	}
 }
 
@@ -185,11 +229,21 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 				asynchronously, so it does not await the message to be 
 				received by the receiver
 			**************************************************************/
-			produce_thread_message(arguments[0]);
+			js_func function;
+			
+			function.value = arguments[0];
+			function.time_interval = (arguments[1]/16);
+			function.type = 0; // timeout
+
+			produce_thread_message(function);
 		} else {
-			printk("It is not a function\n");
+			printk("-- ERROR: while setting the timeout, it is not a function!\n");
 			return 1;
 		}
+		return 0;
+	}
+	return 0;
+}
 		
 		return 0;
 	}
@@ -198,31 +252,31 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 }
 
 
-void produce_thread_message(jerry_value_t script)
+void produce_thread_message(js_func script)
 {
 	struct k_mbox_msg send_msg;
 
 	// while (1) {
+		js_func buffer;
 
-		/* generate data to send */
-		jerry_value_t buffer[] = {script};
-		int buffer_bytes_used = sizeof(buffer);
-		// memcpy(buffer, source, buffer_bytes_used);
-		printk("Script value: %d\n", script);
+		buffer.value = script.value;
+		buffer.time_interval = script.time_interval;
+		buffer.type = script.type; 
+
+		int buffer_bytes_used = sizeof(js_func);
+		// memcpy(buffer, script, buffer_bytes_used);
 
 		/* prepare to send message */
 		send_msg.info = buffer_bytes_used;
 		send_msg.size = buffer_bytes_used;
-		send_msg.tx_data = buffer;
+		send_msg.tx_data = &buffer;
 		send_msg.tx_block.data = NULL;
 		send_msg.tx_target_thread = K_ANY;
 
 		/* send message and wait until a consumer receives it */
 		// printk("-- Sending message...\n");
-		printk("1\n");
 		k_mbox_put(&js_mailbox, &send_msg, K_MSEC(1000));
 		// printk("-- Message sent!\n");
-		printk("2\n");
 		/* info, size, and tx_target_thread fields have been updated */
 
 		/* verify that message data was fully received */
@@ -231,24 +285,27 @@ void produce_thread_message(jerry_value_t script)
 			printk("receiver only had room for %d bytes", send_msg.info);
 		}
 	// }
-	printk("-- Out of the while\n");
 }
 
 
-void consume_thread_message(jerry_value_t * buffer)
+void consume_thread_message(js_func * buffer)
 {
 	struct k_mbox_msg recv_msg;
-	// char buffer[10000];
 
 	// while (1) {
 		/* prepare to receive message */
-		recv_msg.size = 1000;
+		recv_msg.size = sizeof(js_func);
 		recv_msg.rx_source_thread = K_ANY;
 
 		/* get message, but not its data */
-		k_mbox_get(&js_mailbox, &recv_msg, NULL, K_FOREVER);
+		k_mbox_get(&js_mailbox, &recv_msg, NULL, K_NO_WAIT);
 
 		/* retrieve message data and delete the message */
+		if (recv_msg.info == recv_msg.size){
 		k_mbox_data_get(&recv_msg, buffer);
+		} else {
+			buffer->value = 0;
+		}
+
 	// }
 }
