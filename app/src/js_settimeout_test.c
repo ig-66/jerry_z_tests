@@ -304,35 +304,33 @@ void produce_thread_message(js_func script)
 {	
 	struct k_mbox_msg send_msg;
 
-	// while (1) {
-		js_func buffer;
+	js_func buffer;
 
-		buffer.value = script.value;
-		buffer.time_interval = script.time_interval;
-		buffer.type = script.type; 
+	buffer.value = script.value;
+	buffer.time_interval = script.time_interval;
+	buffer.type = script.type; 
 
-		int buffer_bytes_used = sizeof(js_func);
-		// memcpy(buffer, script, buffer_bytes_used);
+	int buffer_bytes_used = sizeof(js_func);
+	// memcpy(buffer, script, buffer_bytes_used);
 
-		/* prepare to send message */
-		send_msg.info = buffer_bytes_used;
-		send_msg.size = buffer_bytes_used;
-		send_msg.tx_data = &buffer;
-		send_msg.tx_block.data = NULL;
-		send_msg.tx_target_thread = K_ANY;
+	/* prepare to send message */
+	send_msg.info = buffer_bytes_used;
+	send_msg.size = buffer_bytes_used;
+	send_msg.tx_data = &buffer;
+	send_msg.tx_block.data = NULL;
+	send_msg.tx_target_thread = K_ANY;
 
-		/* send message and wait until a consumer receives it */
-		// printk("-- Sending message...\n");
-		k_mbox_put(&js_mailbox, &send_msg, K_MSEC(1000));
-		// printk("-- Message sent!\n");
-		/* info, size, and tx_target_thread fields have been updated */
+	/* send message and wait until a consumer receives it */
+	// printk("-- Sending message...\n");
+	k_mbox_put(&js_mailbox, &send_msg, K_MSEC(1000));
+	// printk("-- Message sent!\n");
+	/* info, size, and tx_target_thread fields have been updated */
 
-		/* verify that message data was fully received */
-		if (send_msg.size < buffer_bytes_used) {
-			printk("some message data dropped during transfer!");
-			printk("receiver only had room for %d bytes", send_msg.info);
-		}
-	// }
+	/* verify that message data was fully received */
+	if (send_msg.size < buffer_bytes_used) {
+		printk("some message data dropped during transfer!");
+		printk("receiver only had room for %d bytes", send_msg.info);
+	}
 }
 
 
@@ -340,20 +338,17 @@ void consume_thread_message(js_func * buffer)
 {
 	struct k_mbox_msg recv_msg;
 
-	// while (1) {
-		/* prepare to receive message */
-		recv_msg.size = sizeof(js_func);
-		recv_msg.rx_source_thread = K_ANY;
+	/* prepare to receive message */
+	recv_msg.size = sizeof(js_func);
+	recv_msg.rx_source_thread = K_ANY;
 
-		/* get message, but not its data */
-		k_mbox_get(&js_mailbox, &recv_msg, NULL, K_NO_WAIT);
+	/* get message, but not its data */
+	k_mbox_get(&js_mailbox, &recv_msg, NULL, K_NO_WAIT);
 
-		/* retrieve message data and delete the message */
-		if (recv_msg.info == recv_msg.size){
+	/* retrieve message data and delete the message */
+	if (recv_msg.info == recv_msg.size){
 			k_mbox_data_get(&recv_msg, buffer);
-		} else {
+	} else {
 			buffer->value = 0;
-		}
-
-	// }
+	}
 }
