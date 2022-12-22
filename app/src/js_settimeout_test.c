@@ -32,8 +32,11 @@ typedef struct js_func_schedule js_func;
 extern void jerry_start(void *, void *, void *);
 extern void timeout_exec(void *, void *, void *);
 
+/* MAILBOX FUNCTIONS */
 void produce_thread_message(js_func script);
 void consume_thread_message(js_func *buffer);
+void js_send_func(jerry_value_t js_func_value);
+void js_exec_func(void);
 
 /* Start Jerry engine on a new thread */
 K_THREAD_DEFINE(js_tid, JS_STACK_SIZE,
@@ -80,7 +83,7 @@ void jerry_start(void * unused1, void * unused2, void * unused3){
 
 	while(1){
 		// check for timers and execute them!
-		k_msleep(1000);
+		js_exec_func();
 	}
 }
 
@@ -212,16 +215,16 @@ extern void timeout_exec(void * unused1, void * unused2, void * unused3){
 				func_array[i].time_counter = func_array[i].time_counter - JS_TIME_STEP;
 
 				if(func_array[i].time_counter <= 0){
-					printk("Executing...\n");
-					jerry_value_t undefined;
-					jerry_value_t ret = jerry_call (func_array[i].value, undefined, NULL, 0);
-					jerry_value_free(undefined);
-					jerry_value_free(ret);
+					// printk("Executing...\n");
+					// jerry_value_t undefined;
+					// jerry_value_t ret = jerry_call (func_array[i].value, undefined, NULL, 0);
+					// jerry_value_free(undefined);
+					// jerry_value_free(ret);
+					js_send_func(func_array[i].value);
 					
 					if(func_array[i].type == 0){
 						func_array[i].value = 0;
 					} else {
-						printk("reseting...\n");
 						func_array[i].time_counter = func_array[i].time_interval;
 					}
 				}
@@ -350,5 +353,52 @@ void consume_thread_message(js_func * buffer)
 			k_mbox_data_get(&recv_msg, buffer);
 	} else {
 			buffer->value = 0;
+	}
+}
+
+
+void js_send_func(jerry_value_t js_func_value){
+
+	struct k_mbox_msg send_msg;
+	jerry_value_t buffer = js_func_value;
+	int buffer_bytes_used = sizeof(jerry_value_t);
+
+	/* prepare to send message */
+	send_msg.info = buffer_bytes_used;
+	send_msg.size = buffer_bytes_used;
+	send_msg.tx_data = &buffer;
+	send_msg.tx_block.data = NULL;
+	send_msg.tx_target_thread = js_tid;
+
+	/* send message and wait until a consumer receives it */
+	k_mbox_put(&js_mailbox, &send_msg, K_MSEC(1000));
+
+	/* verify that message data was fully received */
+	if (send_msg.size < buffer_bytes_used){
+		printk("some message data dropped during transfer!\n");
+		printk("receiver only had room for %d bytes\n", send_msg.info);
+	}
+}
+
+
+void js_exec_func(void){
+	jerry_value_t buffer;
+	struct k_mbox_msg recv_msg;
+
+	/* prepare to receive message */
+	recv_msg.size = sizeof(js_func);
+	recv_msg.rx_source_thread = js_time_id;
+
+	/* get message, but not its data */
+	k_mbox_get(&js_mailbox, &recv_msg, NULL, K_NO_WAIT);
+
+	/* retrieve message data and delete the message */
+	if (recv_msg.info == recv_msg.size) {
+		k_mbox_data_get(&recv_msg, &buffer);
+
+		jerry_value_t undefined;
+		// printk("calling: %d\n", buffer);
+		jerry_value_free(jerry_call(buffer, undefined, NULL, 0));
+		jerry_value_free(undefined);
 	}
 }
