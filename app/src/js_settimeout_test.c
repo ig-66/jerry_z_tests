@@ -318,7 +318,7 @@ void produce_thread_message(js_func script)
 	send_msg.size = buffer_bytes_used;
 	send_msg.tx_data = &buffer;
 	send_msg.tx_block.data = NULL;
-	send_msg.tx_target_thread = K_ANY;
+	send_msg.tx_target_thread = js_time_id;
 
 	/* send message and wait until a consumer receives it */
 	// printk("-- Sending message...\n");
@@ -340,7 +340,7 @@ void consume_thread_message(js_func * buffer)
 
 	/* prepare to receive message */
 	recv_msg.size = sizeof(js_func);
-	recv_msg.rx_source_thread = K_ANY;
+	recv_msg.rx_source_thread = js_tid;
 
 	/* get message, but not its data */
 	k_mbox_get(&js_mailbox, &recv_msg, NULL, K_NO_WAIT);
