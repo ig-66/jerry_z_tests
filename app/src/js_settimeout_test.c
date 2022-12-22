@@ -83,6 +83,7 @@ void jerry_start(void * unused1, void * unused2, void * unused3){
 
 	while(1){
 		// check for timers and execute them!
+		k_msleep(10);
 		js_exec_func();
 	}
 }
