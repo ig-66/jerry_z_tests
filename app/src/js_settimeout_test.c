@@ -262,11 +262,9 @@ timeout_handler (const jerry_call_info_t *call_info_p,
 			produce_thread_message(function);
 		} else {
 			printk("-- ERROR: while setting the timeout, it is not a function!\n");
-			return 1;
 		}
-		return 0;
 	}
-	return 0;
+	return jerry_undefined();
 }
 
 
