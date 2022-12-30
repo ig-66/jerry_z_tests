@@ -107,39 +107,33 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
+	// char data[] = "OH BOY, IT WORKS";
+	char data[256];
 	jerry_value_t args[] = {0, 0};
+	jerry_value_t data_string;
 	jerry_value_t error_string = 0;
 	
 	/* DEBUG ONLY - UNCOMMENT BEFORE DEPLOY  */
-	// int res = zephyr_storage_read_file(key_buffer, data);
+	int res = zephyr_storage_read_file(key_buffer, data);
 	/* DEBUG ONLY - REMOVE BEFORE DEPLOY */
-	int res = 1;
+	// int res = -2;
+
 	if(res < 0){
 		char error_message[25];
 		sprintf(error_message, "ERROR reading file: %d", res);
 		error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
 		args[1] = error_string;
 	} else {
-		int valid = jerry_validate_string(data, strlen(data), JERRY_ENCODING_UTF8);
-		if(valid){
-			printk("String is valid\n");
-		} else {
-			printk("String is not valid\n");
+		data_string = jerry_string(data, strlen(data), JERRY_ENCODING_UTF8);
+		args[0] = data_string;
 		}
-		// jerry_value_t data_string = jerry_string(data, strlen(data), JERRY_ENCODING_UTF8);
-		// args[0] = data_string;
-		args[0] = data;
-		printk("args[0]: %d &data: %d\n", args[0], &data);
-		// jerry_value_free(data_string);
-		jerry_value_free(valid);
-	}
-	printk("-- here2\n");
+
 	jerry_value_t ret = jerry_call(arguments[1], jerry_undefined(), args, 2);
-	printk("-- here3\n");
 
 	jerry_value_free(ret);
 	jerry_value_free(args[0]);
 	jerry_value_free(args[1]);
+	jerry_value_free(data_string);
 	jerry_value_free(error_string);
 
 	return jerry_undefined();
