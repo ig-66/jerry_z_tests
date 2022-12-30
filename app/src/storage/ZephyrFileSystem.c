@@ -22,13 +22,20 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 				  const jerry_value_t arguments[],
 				  const jerry_length_t arguments_count)
 {	
-	// printk("Writing file\n");
-	printk("number of arguments: %d\n", (sizeof(arguments) / sizeof(arguments[0])));
-	// printk("Argument 1: %s\n", arguments[1]);
-	// if ((sizeof(arguments) / sizeof(arguments[0])) != 3) {
-	// 	printk("-- ERROR: Incorrect number of arguments on fileWrite()\n");
-	// 	return jerry_undefined();
-	// }
+	if(arguments_count != 3){
+		char error_message[] = "ERROR wrong number of arguments";
+		jerry_value_t error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
+		jerry_value_t arg[] = {error_string};
+
+		jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
+
+		jerry_value_free(ret);
+		jerry_value_free(arg[0]);
+		jerry_value_free(error_string);
+
+		return jerry_undefined();
+	}
+
 
 	jerry_value_t key = jerry_value_to_string(arguments[0]);
 	jerry_char_t key_buffer[256];
@@ -68,10 +75,19 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 				 const jerry_value_t arguments[],
 				 const jerry_length_t arguments_count)
 {
-	// if(sizeof(arguments)/sizeof(arguments[0]) != 2){
-	// 	return jerry_undefined();
-	// }
-	printk("fileRead\n");
+	if (arguments_count != 2) {
+		char error_message[] = "ERROR wrong number of arguments";
+		jerry_value_t error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
+		jerry_value_t arg[] = {error_string};
+
+		jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
+
+		jerry_value_free(ret);
+		jerry_value_free(arg[0]);
+		jerry_value_free(error_string);
+
+		return jerry_undefined();
+	}
 
 	jerry_value_t key = jerry_value_to_string(arguments[0]);
 	jerry_char_t key_buffer[256];
