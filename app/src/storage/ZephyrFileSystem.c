@@ -15,7 +15,7 @@ fs_init_handler(const jerry_call_info_t *call_info_p,
 }
 
 jerry_value_t
-fileWrite_handler(const jerry_call_info_t *call_info_p,
+writeFile_handler(const jerry_call_info_t *call_info_p,
 				  const jerry_value_t arguments[],
 				  const jerry_length_t arguments_count)
 {	
@@ -53,10 +53,8 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 
 	printk("Writing file: name: %s value: %s\n", key_buffer, data_buffer);
 
-	/* debug only - uncomment before deploy: */
 	int res = zephyr_storage_write_file(key_buffer, data_buffer);
-	/* debug only - remove before deploy: */
-	// int res = -1;
+
 	jerry_value_t arg[] = {0};
 	jerry_value_t error_string = 0;
 
@@ -76,7 +74,7 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 }
 
 jerry_value_t
-fileRead_handler(const jerry_call_info_t *call_info_p,
+readFile_handler(const jerry_call_info_t *call_info_p,
 				 const jerry_value_t arguments[],
 				 const jerry_length_t arguments_count)
 {
@@ -103,16 +101,12 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
-	// char data[] = "OH BOY, IT WORKS";
 	char data[256];
 	jerry_value_t args[] = {0, 0};
 	jerry_value_t data_string;
 	jerry_value_t error_string = 0;
 
-	/* DEBUG ONLY - UNCOMMENT BEFORE DEPLOY  */
 	int res = zephyr_storage_read_file(key_buffer, data);
-	/* DEBUG ONLY - REMOVE BEFORE DEPLOY */
-	// int res = -2;
 
 	if(res < 0){
 		char error_message[25];

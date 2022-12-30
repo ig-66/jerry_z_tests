@@ -33,30 +33,30 @@ int main(void){
 		fs.init(); \
 		var data = 'value'; \
 		new Promise((resolve, reject) => { \
-            fs.writeFile('/SD:/key9.nvd', data, function (err) { \
-                if(err) { \
+			fs.writeFile('/SD:/key9.nvd', data, function (err) { \
+				if(err) { \
 					print('promise rejected'); \
 					print(err); \
-                    reject(err); \
-                } else { \
+					reject(err); \
+				} else { \
 					print('promise resolved'); \
-                    resolve(); \
-                } \
-            }); \
-        }); \
+					resolve(); \
+				} \
+			}); \
+		}); \
 		new Promise((resolve, reject) => { \
-            fs.readFile('/SD:/key9.nvd', function (resolve, err) { \
-                if(resolve) { \
+			fs.readFile('/SD:/key9.nvd', function (resolve, err) { \
+				if(resolve) { \
 					print('promise resolved'); \
 					print(resolve); \
-                    resolve(); \
-                } else { \
+					resolve(); \
+				} else { \
 					print('promise rejected'); \
 					print(err); \
-                    reject(err); \
-                } \
-            }); \
-        }); \
+					reject(err); \
+				} \
+			}); \
+		}); \
 		print('end'); \
 	";
 
@@ -68,8 +68,8 @@ int main(void){
 	jerryx_register_global("print", jerryx_handler_print);
 
 	jerryx_register_global("fs_init", fs_init_handler);
-	jerryx_register_global("fs_write", fileWrite_handler);
-	jerryx_register_global("fs_read", fileRead_handler);
+	jerryx_register_global("fs_write", writeFile_handler);
+	jerryx_register_global("fs_read", readFile_handler);
 
 	/* Setup Global scope code */
 	jerry_value_t parsed_code = jerry_parse(script, script_size, NULL);

@@ -9,12 +9,12 @@ fs_init_handler(const jerry_call_info_t *call_info_p,
                 const jerry_length_t arguments_count);
 
 jerry_value_t
-fileWrite_handler(const jerry_call_info_t *call_info_p,
+writeFile_handler(const jerry_call_info_t *call_info_p,
             const jerry_value_t arguments[],
             const jerry_length_t arguments_count);
 
 jerry_value_t
-fileRead_handler(const jerry_call_info_t *call_info_p,
+readFile_handler(const jerry_call_info_t *call_info_p,
             const jerry_value_t arguments[],
             const jerry_length_t arguments_count);
 
