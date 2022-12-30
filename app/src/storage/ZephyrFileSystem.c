@@ -10,10 +10,7 @@ fs_init_handler(const jerry_call_info_t *call_info_p,
 				const jerry_value_t arguments[],
 				const jerry_length_t arguments_count)
 {	
-	printk("initializing storage\n");
 	zephyr_storage_init();
-	printk("storage ready\n");
-
 	return jerry_undefined();
 }
 
@@ -60,7 +57,6 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 	int res = zephyr_storage_write_file(key_buffer, data_buffer);
 	/* debug only - remove before deploy: */
 	// int res = -1;
-	printk("write result: %d\n", res);
 	jerry_value_t arg[] = {0};
 	jerry_value_t error_string = 0;
 
@@ -112,7 +108,7 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t args[] = {0, 0};
 	jerry_value_t data_string;
 	jerry_value_t error_string = 0;
-	
+
 	/* DEBUG ONLY - UNCOMMENT BEFORE DEPLOY  */
 	int res = zephyr_storage_read_file(key_buffer, data);
 	/* DEBUG ONLY - REMOVE BEFORE DEPLOY */
@@ -126,7 +122,7 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	} else {
 		data_string = jerry_string(data, strlen(data), JERRY_ENCODING_UTF8);
 		args[0] = data_string;
-		}
+	}
 
 	jerry_value_t ret = jerry_call(arguments[1], jerry_undefined(), args, 2);
 
@@ -159,14 +155,6 @@ int zephyr_storage_write_file(char *pfile_name, char *pfile_data)
 	int res = 0;
 	struct fs_file_t testfile;
 	char file_name[38];
-
-	// if (IS_ENABLED(CONFIG_DISK_DRIVER_RAM)) {
-	// 	mount[] = "/RAM:/";
-	// } else if (IS_ENABLED(CONFIG_DISK_DRIVER_SDMMC)) {
-	// 	mount[] = "/SD:/";
-	// } else {
-	// 	mount[] = "/NAND:/";
-	// }
 
 	sprintf(file_name, "%s", pfile_name);
 

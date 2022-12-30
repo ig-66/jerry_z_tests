@@ -74,7 +74,6 @@ int main(void){
 	if (!jerry_value_is_exception(parsed_code))
 	{
 		/* Execute the parsed source code in the Global scope */
-		printk("Parsed code is not an exception!\n");
 		jerry_value_t ret_value = jerry_run(parsed_code);
 
 		/* Returned value must be freed */
