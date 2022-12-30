@@ -36,6 +36,7 @@ int main(void){
             fs.writeFile('/SD:/key9.nvd', data, function (err) { \
                 if(err) { \
 					print('promise rejected'); \
+					print(err); \
                     reject(err); \
                 } else { \
 					print('promise resolved'); \
@@ -47,9 +48,11 @@ int main(void){
             fs.readFile('/SD:/key9.nvd', function (resolve, err) { \
                 if(resolve) { \
 					print('promise resolved'); \
+					print(resolve); \
                     resolve(); \
                 } else { \
 					print('promise rejected'); \
+					print(err); \
                     reject(err); \
                 } \
             }); \
