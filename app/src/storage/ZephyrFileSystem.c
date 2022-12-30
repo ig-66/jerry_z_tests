@@ -62,13 +62,19 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 	// int res = -1;
 	printk("write result: %d\n", res);
 	jerry_value_t arg[] = {0};
-	if(res < 0){
-		arg[0] = jerry_string("true", strlen("true"), 1);
+	jerry_value_t error_string = 0;
+
+	if (res < 0) {
+		char error_message[25];
+		sprintf(error_message, "ERROR reading file: %d", res);
+		error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
+		arg[0] = error_string;
 	}
 	jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
 
 	jerry_value_free(ret);
 	jerry_value_free(arg[0]);
+	jerry_value_free(error_string);
 
 	return jerry_undefined();
 }
@@ -101,19 +107,18 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
-	static char data[] = "data fromm file";
-	jerry_value_t args[2] = {0, 0};
+	jerry_value_t args[] = {0, 0};
+	jerry_value_t error_string = 0;
 	
 	/* DEBUG ONLY - UNCOMMENT BEFORE DEPLOY  */
 	// int res = zephyr_storage_read_file(key_buffer, data);
 	/* DEBUG ONLY - REMOVE BEFORE DEPLOY */
 	int res = 1;
 	if(res < 0){
-		char txt[] = "true";
-		args[1] = jerry_string("true", strlen("true"), 1);
-		// printk("args[1]: %d ", args[1]);
-		args[1] = jerry_string(txt, strlen(txt), 1);
-		// printk("args[1]: %d\n", args[1]);
+		char error_message[25];
+		sprintf(error_message, "ERROR reading file: %d", res);
+		error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
+		args[1] = error_string;
 	} else {
 		int valid = jerry_validate_string(data, strlen(data), JERRY_ENCODING_UTF8);
 		if(valid){
@@ -135,6 +140,7 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(ret);
 	jerry_value_free(args[0]);
 	jerry_value_free(args[1]);
+	jerry_value_free(error_string);
 
 	return jerry_undefined();
 }
