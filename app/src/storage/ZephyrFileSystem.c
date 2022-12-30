@@ -51,7 +51,9 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 	copied_bytes = jerry_string_to_buffer(data, JERRY_ENCODING_UTF8, data_buffer, sizeof(data_buffer) - 1);
 	data_buffer[copied_bytes] = '\0';
 
+	jerry_value_free(copied_bytes);
 	jerry_value_free(data);
+
 	printk("Writing file: name: %s value: %s\n", key_buffer, data_buffer);
 
 	/* debug only - uncomment before deploy: */
@@ -66,6 +68,7 @@ fileWrite_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
 
 	jerry_value_free(ret);
+	jerry_value_free(arg[0]);
 
 	return jerry_undefined();
 }
@@ -95,6 +98,7 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	jerry_size_t copied_bytes = jerry_string_to_buffer(key, JERRY_ENCODING_UTF8, key_buffer, sizeof(key_buffer) - 1);
 	key_buffer[copied_bytes] = '\0';
 
+	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
 	static char data[] = "data fromm file";
@@ -129,7 +133,8 @@ fileRead_handler(const jerry_call_info_t *call_info_p,
 	printk("-- here3\n");
 
 	jerry_value_free(ret);
-	jerry_value_free(args);
+	jerry_value_free(args[0]);
+	jerry_value_free(args[1]);
 
 	return jerry_undefined();
 }
