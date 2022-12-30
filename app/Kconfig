@@ -35,6 +35,9 @@ choice
 	config JERRYZ_SETTIMEOUT_TEST
 		bool "Build the set timeout TEST?"
 		select JERRY_PARSER
+	
+	config FIELDFARE
+		bool "Test fieldfare"
 
 endchoice
 	
