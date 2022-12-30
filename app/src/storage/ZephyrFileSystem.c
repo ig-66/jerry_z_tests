@@ -196,16 +196,7 @@ int zephyr_storage_read_file(char *pfile_name, char *pfile_data)
 	struct fs_file_t testfile;
 	char file_name[38];
 
-	char mount[] = "/SD:/";
-	// if (IS_ENABLED(CONFIG_DISK_DRIVER_RAM)) {
-	// 	mount[] = "/RAM:/";
-	// } else if (IS_ENABLED(CONFIG_DISK_DRIVER_SDMMC)) {
-	// 	mount[] = "/SD:/";
-	// } else {
-	// 	mount[] = "/NAND:/";
-	// }
-
-	sprintf(file_name, "%s%s", mount, pfile_name);
+	sprintf(file_name, "%s", pfile_name);
 
 	fs_file_t_init(&testfile);
 
