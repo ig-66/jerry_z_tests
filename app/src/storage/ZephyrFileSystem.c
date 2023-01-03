@@ -29,15 +29,13 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 		jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
 
 		jerry_value_free(ret);
-		jerry_value_free(arg[0]);
 		jerry_value_free(error_string);
 
 		return jerry_undefined();
 	}
 
-
 	jerry_value_t key = jerry_value_to_string(arguments[0]);
-	jerry_char_t key_buffer[256];
+	uint8_t key_buffer[256];
 
 	jerry_size_t copied_bytes = jerry_string_to_buffer(key, JERRY_ENCODING_UTF8, key_buffer, sizeof(key_buffer) - 1);
 	key_buffer[copied_bytes] = '\0';
@@ -47,19 +45,15 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t data = jerry_value_to_string(arguments[1]);
 	uint8_t data_buffer[FS_DATA_SIZE];
 
-	copied_bytes = jerry_string_to_buffer(data, JERRY_ENCODING_UTF8, data_buffer, sizeof(data_buffer) - 1);
-	data_buffer[copied_bytes] = '\0';
+	jerry_size_t copied_bytes1 = jerry_string_to_buffer(data, JERRY_ENCODING_UTF8, data_buffer, sizeof(data_buffer) - 1);
+	data_buffer[copied_bytes1] = '\0';
 
-	jerry_value_free(copied_bytes);
 	jerry_value_free(data);
-
-	printk("Writing file: name: %s value: %s\n", key_buffer, data_buffer);
-
+	
 	int res = zephyr_storage_write_file(key_buffer, data_buffer);
 
 	jerry_value_t arg[] = {0};
 	jerry_value_t error_string = 0;
-
 	if (res < 0) {
 		char error_message[25];
 		sprintf(error_message, "ERROR reading file: %d", res);
@@ -69,7 +63,6 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
 
 	jerry_value_free(ret);
-	jerry_value_free(arg[0]);
 	jerry_value_free(error_string);
 
 	return jerry_undefined();
@@ -88,19 +81,17 @@ readFile_handler(const jerry_call_info_t *call_info_p,
 		jerry_value_t ret = jerry_call(arguments[2], jerry_undefined(), arg, 1);
 
 		jerry_value_free(ret);
-		jerry_value_free(arg[0]);
 		jerry_value_free(error_string);
 
 		return jerry_undefined();
 	}
 
 	jerry_value_t key = jerry_value_to_string(arguments[0]);
-	jerry_char_t key_buffer[256];
+	uint8_t key_buffer[256];
 
 	jerry_size_t copied_bytes = jerry_string_to_buffer(key, JERRY_ENCODING_UTF8, key_buffer, sizeof(key_buffer) - 1);
 	key_buffer[copied_bytes] = '\0';
 
-	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
 	char data[FS_DATA_SIZE];
@@ -123,8 +114,6 @@ readFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t ret = jerry_call(arguments[1], jerry_undefined(), args, 2);
 
 	jerry_value_free(ret);
-	jerry_value_free(args[0]);
-	jerry_value_free(args[1]);
 	jerry_value_free(data_string);
 	jerry_value_free(error_string);
 
