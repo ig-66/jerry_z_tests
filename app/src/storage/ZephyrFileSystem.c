@@ -5,6 +5,8 @@
 #include <zephyr/fs/fs.h>
 #include <stdio.h>
 
+#define FS_DATA_SIZE 1024
+
 jerry_value_t
 fs_init_handler(const jerry_call_info_t *call_info_p,
 				const jerry_value_t arguments[],
@@ -43,7 +45,7 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(key);
 
 	jerry_value_t data = jerry_value_to_string(arguments[1]);
-	jerry_char_t data_buffer[256];
+	uint8_t data_buffer[FS_DATA_SIZE];
 
 	copied_bytes = jerry_string_to_buffer(data, JERRY_ENCODING_UTF8, data_buffer, sizeof(data_buffer) - 1);
 	data_buffer[copied_bytes] = '\0';
@@ -101,7 +103,7 @@ readFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_free(copied_bytes);
 	jerry_value_free(key);
 
-	char data[256];
+	char data[FS_DATA_SIZE];
 	jerry_value_t args[] = {0, 0};
 	jerry_value_t data_string;
 	jerry_value_t error_string = 0;
@@ -189,7 +191,7 @@ int zephyr_storage_read_file(char *pfile_name, char *pfile_data)
 		return res;
 	}
 
-	res = fs_read(&testfile, pfile_data, 256);
+	res = fs_read(&testfile, pfile_data, FS_DATA);
 
 	if(res < 0) {
 		printk("-- ERROR: while reading the file: %s\n", file_name);
