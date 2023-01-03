@@ -55,7 +55,8 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 	jerry_value_t arg[] = {0};
 	jerry_value_t error_string = 0;
 	if (res < 0) {
-		char error_message[25];
+		printk("-- ERROR writting the file\n");
+		char error_message[32];
 		sprintf(error_message, "ERROR reading file: %d", res);
 		error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
 		arg[0] = error_string;
@@ -102,7 +103,8 @@ readFile_handler(const jerry_call_info_t *call_info_p,
 	int res = zephyr_storage_read_file(key_buffer, data);
 
 	if(res < 0){
-		char error_message[25];
+		printk("-- ERROR reading the file\n");
+		char error_message[32];
 		sprintf(error_message, "ERROR reading file: %d", res);
 		error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
 		args[1] = error_string;
