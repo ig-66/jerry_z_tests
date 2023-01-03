@@ -182,7 +182,7 @@ int zephyr_storage_read_file(char *pfile_name, char *pfile_data)
 		return res;
 	}
 
-	res = fs_read(&testfile, pfile_data, FS_DATA);
+	res = fs_read(&testfile, pfile_data, FS_DATA_SIZE);
 
 	if(res < 0) {
 		printk("-- ERROR: while reading the file: %s\n", file_name);
