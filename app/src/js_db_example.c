@@ -1,5 +1,4 @@
-#include "storage/js_kvdb.h"
-#include "storage/ZephyrFileSystem.h"
+#include "ZephyrFileSystem.h"
 
 #include <zephyr/zephyr.h>
 // JerryScript Library
