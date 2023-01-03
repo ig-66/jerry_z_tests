@@ -29,32 +29,32 @@ int main(void){
 		}; \
 		fs = new File; \
 		fs.init(); \
-		var data = 'value'; \
-		new Promise((resolve, reject) => { \
-			fs.writeFile('/SD:/key9.nvd', data, function (err) { \
-				if(err) { \
-					print('promise rejected'); \
-					print(err); \
-					reject(err); \
-				} else { \
-					print('promise resolved'); \
-					resolve(); \
-				} \
+		var data = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse elementum molestie sapien. Cras sit amet auctor eros. Phasellus mollis mi arcu, lacinia ultrices dolor varius in. Nulla leo mi, egestas non orci eget, commodo commodo nulla. Cras pulvinar, ipsum in faucibus varius, augue diam tincidunt metus, et faucibus sapien urna sit amet lorem. Integer condimentum diam id libero accumsan eleifend. Etiam in mauris non arcu porta scelerisque id non metus. Curabitur neque ligula, gravida vel eleifend sit.'; \
+		for(var i = 0; i < 1000; i++){ \
+			new Promise((resolve, reject) => { \
+				fs.writeFile('/SD:/key8.nvd', data, function (err) { \
+					if(err) { \
+						print('promise rejected'); \
+						print(err); \
+						reject(err); \
+					} else { \
+						resolve(); \
+					} \
+				}); \
 			}); \
-		}); \
-		new Promise((resolve, reject) => { \
-			fs.readFile('/SD:/key9.nvd', function (resolve, err) { \
-				if(resolve) { \
-					print('promise resolved'); \
-					print(resolve); \
-					resolve(); \
-				} else { \
-					print('promise rejected'); \
-					print(err); \
-					reject(err); \
-				} \
+			new Promise((resolve, reject) => { \
+				fs.readFile('/SD:/key9.nvd', function (resolve, err) { \
+					if(resolve) { \
+						resolve(); \
+					} else { \
+						print('promise rejected'); \
+						print(err); \
+						reject(err); \
+					} \
+				}); \
 			}); \
-		}); \
+			print('Try ' + (i+1)); \
+		} \
 		print('end'); \
 	";
 
