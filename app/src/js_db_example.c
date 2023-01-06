@@ -1,19 +1,12 @@
-#include "ZephyrFileSystem.h"
-#include "ZephyrStringConversion.h"
-#include "ZephyrHash.h"
-#include "jz_helpers.h"
-
 
 #include <zephyr/zephyr.h>
-// JerryScript Library
+
+#include "jz_lib.h"
 #include "jerryscript.h"
-#include "jerryscript-ext/handlers.h"
-#include "jerryscript-ext/properties.h"
 
 int main(void){
 
-	const jerry_char_t script[] = "fs.init(); \
-		console.log('begun'); \
+	const jerry_char_t script[] = "console.log('begun'); \
 		var data = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse elementum molestie sapien. Cras sit amet auctor eros. Phasellus mollis mi arcu, lacinia ultrices dolor varius in. Nulla leo mi, egestas non orci eget, commodo commodo nulla. Cras pulvinar, ipsum in faucibus varius, augue diam tincidunt metus, et faucibus sapien urna sit amet lorem. Integer condimentum diam id libero accumsan eleifend. Etiam in mauris non arcu porta scelerisque id non metus. Curabitur neque ligula, gravida vel eleifend sit.'; \
 		console.log('data hash: ' + crypto.digest('SHA-256', data)); \
 		var base64 = btoa(data); \
@@ -51,22 +44,7 @@ int main(void){
 
 	/* Initialize engine */
 	jerry_init(JERRY_INIT_EMPTY);
-
-	jerryx_register_global("print", jerryx_handler_print);
-
-	jz_object_create("fs");
-	jz_object_add_prop("fs", "init", fs_init_handler);
-	jz_object_add_prop("fs", "writeFile", writeFile_handler);
-	jz_object_add_prop("fs", "readFile", readFile_handler);
-
-	jz_object_create("console");
-	jz_object_add_prop("console", "log", jerryx_handler_print);
-
-	jz_function_create("btoa", btoa_handler);
-	jz_function_create("atob", atob_handler);
-
-	jz_object_create("crypto");
-	jz_object_add_prop("crypto", "digest", digest_handler);
+	jz_init();
 
 	/* Setup Global scope code */
 	jerry_value_t parsed_code = jerry_parse(script, script_size, NULL);

@@ -9,10 +9,6 @@
 
 #define FS_DATA_SIZE 1024
 
-/* Initialize the Zephyr storage
- */
-int zephyr_storage_init(void);
-
 /*  Create and/or write a file with data
  *
  *   Returns > 0 - on success
@@ -26,15 +22,6 @@ int zephyr_storage_write_file(char *pfile_name, char *pfile_data);
  *   Returns < 0 - on error (error code)
  */
 int zephyr_storage_read_file(char *pfile_name, char *pfile_data);
-
-jerry_value_t
-fs_init_handler(const jerry_call_info_t *call_info_p,
-				const jerry_value_t arguments[],
-				const jerry_length_t arguments_count)
-{	
-	zephyr_storage_init();
-	return jerry_undefined();
-}
 
 jerry_value_t
 writeFile_handler(const jerry_call_info_t *call_info_p,
