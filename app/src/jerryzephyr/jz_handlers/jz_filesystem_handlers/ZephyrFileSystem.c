@@ -1,11 +1,31 @@
 #include "ZephyrFileSystem.h"
 
 #include <zephyr/zephyr.h>
-#include <zephyr/usb/usb_device.h>
 #include <zephyr/fs/fs.h>
 #include <stdio.h>
+#include <string.h>
+
+#pragma message "--- The following warning message is expected, please, ignore it ---"
 
 #define FS_DATA_SIZE 1024
+
+/* Initialize the Zephyr storage
+ */
+int zephyr_storage_init(void);
+
+/*  Create and/or write a file with data
+ *
+ *   Returns > 0 - on success
+ *   Returns < 0 - on error (error code)
+ */
+int zephyr_storage_write_file(char *pfile_name, char *pfile_data);
+
+/*  Read data in a file
+ *
+ *   Returns > 0 - on success
+ *   Returns < 0 - on error (error code)
+ */
+int zephyr_storage_read_file(char *pfile_name, char *pfile_data);
 
 jerry_value_t
 fs_init_handler(const jerry_call_info_t *call_info_p,
@@ -49,7 +69,6 @@ writeFile_handler(const jerry_call_info_t *call_info_p,
 	data_buffer[copied_bytes1] = '\0';
 
 	jerry_value_free(data);
-	
 	int res = zephyr_storage_write_file(key_buffer, data_buffer);
 
 	jerry_value_t arg[] = {0};
@@ -73,7 +92,7 @@ jerry_value_t
 readFile_handler(const jerry_call_info_t *call_info_p,
 				 const jerry_value_t arguments[],
 				 const jerry_length_t arguments_count)
-{
+{	
 	if (arguments_count != 2) {
 		char error_message[] = "ERROR wrong number of arguments";
 		jerry_value_t error_string = jerry_string(error_message, strlen(error_message), JERRY_ENCODING_UTF8);
@@ -159,7 +178,7 @@ int zephyr_storage_write_file(char *pfile_name, char *pfile_data)
 	if (res < 0) {
 		printk("-- ERROR: Error while creating or writting file: %s\n", file_name);
 	}
-	
+
 	fs_close(&testfile);
 
 	return res;
@@ -334,16 +353,7 @@ static void setup_disk(void)
 
 int zephyr_storage_init(void)
 {
-	int ret;
-
 	setup_disk();
-
-	/* THE USB MASS STORAGE CAN BE DISABLED */
-	ret = usb_enable(NULL);
-	if (ret != 0)
-	{
-		return 1;
-	}
 
 	return 0;
 }

@@ -58,6 +58,40 @@ if JERRYZ_EXAMPLE_SNAPSHOT
 
 endif # JERRYZ_EXAMPLE_SNAPSHOT
 
+
+# JZ_LIBRARY CONFIGS
+config JZ_LIBRARY
+	bool "Use JZ library?"
+	default n
+
+if JZ_LIBRARY
+
+	config JZ_HELPERS
+		bool "Enable JZ helpers"
+		default y
+		help
+			"This will add helpers e.g. for JS object creation in C"
+
+	config JZ_FILESYSTEM_HANDLERS
+		bool "Enable File System handlers"
+		default n
+
+	config JZ_CRYPTO_HANDLERS
+		bool "Enable crypto handlers"
+		default n
+		help
+			"This option will turn add the crypto handlers, e.g. crypto.digest, etc"
+
+endif
+
+
+if FIELDFARE
+	config JZ_LIBRARY
+		default y
+	config JZ_FILESYSTEM_HANDLERS
+		default y
+endif
+
 config USB_DEVICE_PID
 	default 0x0008 
 

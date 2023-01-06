@@ -36,9 +36,13 @@ if(CONFIG_FIELDFARE)
     message(STATUS "|   Building the fieldfare test!  |")
     message(STATUS "+---------------------------------+")
     target_sources(app PRIVATE js_db_example.c)
-    
-    set(JERRY_ZEPHYR_FS_INCLUDE storage)
-    set(JERRY_ZEPHYR_FS_SOURCE storage/ZephyrFileSystem.c)
-    zephyr_include_directories(${JERRY_ZEPHYR_FS_INCLUDE})
-    zephyr_library_sources(${JERRY_ZEPHYR_FS_SOURCE})
 endif()
+
+if(CONFIG_FF_CRYPTO_TEST)
+    message(STATUS "+---------------------------------+")
+    message(STATUS "|    Building the FF Hash test!   |")
+    message(STATUS "+---------------------------------+")
+    target_sources(app PRIVATE js_crypto_subtle.c)
+endif()
+
+add_subdirectory(jerryzephyr)
