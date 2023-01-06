@@ -1,11 +1,4 @@
 
-if(CONFIG_JZ_HELPERS)
-    set(JZ_HELPERS_INCLUDE jz_helpers)
-    set(JZ_HELPERS_SOURCES jz_helpers/jz_helpers.c)
-    zephyr_include_directories(${JZ_HELPERS_INCLUDE})
-    zephyr_library_sources(${JZ_HELPERS_SOURCES})
-endif()
-
 if(CONFIG_JZ_CRYPTO_HANDLERS)
     set(JZ_CRYPTO_HANDLERS_INCLUDE jz_handlers/jz_crypto_handlers)
     set(JZ_CRIPTO_HANDLERS_SOURCES jz_handlers/jz_crypto_handlers/ZephyrHash.c)
@@ -19,6 +12,11 @@ if(CONFIG_JZ_FILESYSTEM_HANDLERS)
     zephyr_include_directories(${JZ_FILESYSTEM_HANDLERS_INCLUDE})
     zephyr_library_sources(${JZ_FILESYSTEM_HANDLERS_SOURCES}) 
 endif()
+
+set(JZ_HELPERS_INCLUDE jz_helpers)
+set(JZ_HELPERS_SOURCES jz_helpers/jz_helpers.c)
+zephyr_include_directories(${JZ_HELPERS_INCLUDE})
+zephyr_library_sources(${JZ_HELPERS_SOURCES})
 
 set(JZ_CONVERSION_HANDLERS_INCLUDE jz_handlers/jz_conversion_handlers)
 set(JZ_CONVERSION_HANDLERS_SOURCES jz_handlers/jz_conversion_handlers/ZephyrStringConversion.c)

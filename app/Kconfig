@@ -66,12 +66,6 @@ config JZ_LIBRARY
 
 if JZ_LIBRARY
 
-	config JZ_HELPERS
-		bool "Enable JZ helpers"
-		default y
-		help
-			"This will add helpers e.g. for JS object creation in C"
-
 	config JZ_FILESYSTEM_HANDLERS
 		bool "Enable File System handlers"
 		default n
