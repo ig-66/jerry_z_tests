@@ -45,4 +45,6 @@ if(CONFIG_FF_CRYPTO_TEST)
     target_sources(app PRIVATE js_crypto_subtle.c)
 endif()
 
+if(CONFIG_JZ_LIBRARY)
 add_subdirectory(jerryzephyr)
+endif()
