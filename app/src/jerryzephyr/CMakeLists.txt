@@ -1,5 +1,9 @@
 
 if(CONFIG_JZ_HELPERS)
+    set(JZ_HELPERS_INCLUDE jz_helpers)
+    set(JZ_HELPERS_SOURCES jz_helpers/jz_helpers.c)
+    zephyr_include_directories(${JZ_HELPERS_INCLUDE})
+    zephyr_library_sources(${JZ_HELPERS_SOURCES})
 endif()
 
 if(CONFIG_JZ_CRYPTO_HANDLERS)
