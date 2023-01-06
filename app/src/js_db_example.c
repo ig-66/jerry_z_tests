@@ -1,4 +1,5 @@
 #include "ZephyrFileSystem.h"
+#include "ZephyrStringConversion.h"
 #include "jz_helpers.h"
 
 
@@ -13,7 +14,10 @@ int main(void){
 	const jerry_char_t script[] = "fs.init(); \
 		console.log('begun'); \
 		var data = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse elementum molestie sapien. Cras sit amet auctor eros. Phasellus mollis mi arcu, lacinia ultrices dolor varius in. Nulla leo mi, egestas non orci eget, commodo commodo nulla. Cras pulvinar, ipsum in faucibus varius, augue diam tincidunt metus, et faucibus sapien urna sit amet lorem. Integer condimentum diam id libero accumsan eleifend. Etiam in mauris non arcu porta scelerisque id non metus. Curabitur neque ligula, gravida vel eleifend sit.'; \
-		for(var i = 0; i < 1000; i++){ \
+		var base64 = btoa(data); \
+		console.log('encoded: ' + base64); \
+		var decoded = atob(base64); \
+		console.log('decoded: ' + decoded); \
 			new Promise((resolve, reject) => { \
 				fs.writeFile('/SD:/key8.nvd', data, function (err) { \
 					if(err) { \
@@ -56,6 +60,8 @@ int main(void){
 	jz_object_create("console");
 	jz_object_add_prop("console", "log", jerryx_handler_print);
 
+	jz_function_create("btoa", btoa_handler);
+	jz_function_create("atob", atob_handler);
 	/* Setup Global scope code */
 	jerry_value_t parsed_code = jerry_parse(script, script_size, NULL);
 
