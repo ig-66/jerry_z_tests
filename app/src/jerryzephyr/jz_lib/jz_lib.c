@@ -35,7 +35,8 @@ int jz_init(void){
 
     #if CONFIG_JZ_CRYPTO_HANDLERS
     jz_object_create("crypto");
-    jz_object_add_prop("crypto", "digest", digest_handler);
+    jz_object_add_obj("crypto", "subtle");
+    jz_object_prop_add_prop("crypto", "subtle", "digest", digest_handler);
     #endif
 
     return error;

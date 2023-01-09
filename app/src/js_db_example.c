@@ -7,8 +7,12 @@
 int main(void){
 
 	const jerry_char_t script[] = "console.log('begun'); \
+		var message_hash = crypto.subtle.digest('SHA-256', 'Hello there!'); \
+		console.log('hash: ' + message_hash); \
+		console.log('hash in b64 ' + btoa(message_hash)); \
+		console.log('hash again ' + atob(btoa(message_hash))); \
 		var data = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse elementum molestie sapien. Cras sit amet auctor eros. Phasellus mollis mi arcu, lacinia ultrices dolor varius in. Nulla leo mi, egestas non orci eget, commodo commodo nulla. Cras pulvinar, ipsum in faucibus varius, augue diam tincidunt metus, et faucibus sapien urna sit amet lorem. Integer condimentum diam id libero accumsan eleifend. Etiam in mauris non arcu porta scelerisque id non metus. Curabitur neque ligula, gravida vel eleifend sit.'; \
-		console.log('data hash: ' + crypto.digest('SHA-256', data)); \
+		console.log('data hash: ' + crypto.subtle.digest('SHA-256', data)); \
 		var base64 = btoa(data); \
 		console.log('encoded: ' + base64); \
 		var decoded = atob(base64); \
