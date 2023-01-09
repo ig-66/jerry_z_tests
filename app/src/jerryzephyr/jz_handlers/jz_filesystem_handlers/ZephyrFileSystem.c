@@ -159,8 +159,7 @@ int zephyr_storage_write_file(char *pfile_name, char *pfile_data)
 		printk("-- ERROR: while openning the file: %s\n", file_name);
 		return res;
 	}
-
-	res = fs_write(&testfile, pfile_data, strlen(pfile_data));
+	res = fs_write(&testfile, pfile_data, strlen(pfile_data) + 1);
 
 	if (res < 0) {
 		printk("-- ERROR: Error while creating or writting file: %s\n", file_name);
